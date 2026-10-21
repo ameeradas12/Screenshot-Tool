@@ -7,5 +7,7 @@ Press the hotkey, then drag a box.
 
 ## How to run
 
+```
 python -m pip install -r requirements.txt
 python snipper.py
+```
