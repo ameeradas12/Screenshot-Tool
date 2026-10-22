@@ -3,7 +3,7 @@ import signal
 
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtCore import Qt, QRect, QObject, Signal
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, QColor, QRegion
 
 from pynput import keyboard
 
@@ -27,9 +27,21 @@ class Snipper(QWidget):
     def paintEvent(self,event):
         painter = QPainter(self)
         painter.drawPixmap(0,0, self.shot)
+        dim = QColor(0,0,0,120)
+        region = QRegion(self.rect())
+
+        if self.start is not None:
+            selection = QRect(self.start, self.end).normalized()
+            region = region.subtracted(QRegion(selection))
+
+        painter.save()
+        painter.setClipRegion(region)
+        painter.fillRect(self.rect(), dim)
+        painter.restore()
+
         if self.start is not None:
             painter.setPen(Qt.red)
-            painter.drawRect(QRect(self.start, self.end).normalized())
+            painter.drawRect(selection)
 
     def mousePressEvent(self, event):
         self.start = event.position().toPoint()
